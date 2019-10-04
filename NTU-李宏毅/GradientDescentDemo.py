@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import math
 
 # y_data = b + w * x_data
 # L(w,b) = Σ(𝑦𝑛 - (b+w*𝑥𝑛))^2 n=1..10
@@ -6,10 +7,12 @@ x_data = [338., 333., 328. , 207. , 226. , 25. , 179. , 60. , 208., 606.]
 y_data = [ 640. , 633. , 619. , 393. , 428. , 27. , 193. , 66. , 226. , 1591.]
 
 # 1. (Randomly) Pick an initial value w0,b0
-# 2. 𝑤1 ← 𝑤0 − 𝜂 * 𝜕𝐿/𝜕𝑤|𝑤=𝑤0,𝑏=𝑏0 ; 𝑏1 ← ...
+# 2. 𝑤1 ← 𝑤0 − 𝜂/(root mean square) * 𝜕𝐿/𝜕𝑤|𝑤=𝑤0,𝑏=𝑏0 ; 𝑏1 ← ...
 b = -120
 w = -4
-lr = 0.000001  # learning rate
+lr = 1  # learning rate
+squ_b = 0
+squ_w = 0
 iteration = 100000
 
 b_hist = [b]
@@ -20,8 +23,10 @@ for i in range(iteration):
     for n in range(len(x_data)):
         w_grad += 2.0 * (y_data[n] - (b + w*x_data[n])) * (-x_data[n])
         b_grad += 2.0 * (y_data[n] - (b + w*x_data[n])) * -1.0
-    b = b - lr * b_grad
-    w = w - lr * w_grad
+    squ_b += b_grad**2
+    squ_w += w_grad**2
+    b = b - lr / math.sqrt(squ_b) * b_grad
+    w = w - lr / math.sqrt(squ_w) * w_grad
 
     b_hist.append(b)
     w_hist.append(w)
